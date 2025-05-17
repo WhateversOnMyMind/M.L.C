@@ -127,7 +127,7 @@ class Car:
 
 
   # List to store points
-cars = [Car() for _ in range(25)] 
+cars = [Car() for _ in range(40)] 
 for agent in cars:
     agent.weight = initial()
   # Initialize weights
