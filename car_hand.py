@@ -26,7 +26,7 @@ def calculation(up, down, left, right, speed, friction, acceleration, angle, car
     speed = min(max(speed, 0), 8)
 
     carx = max(0, min(carx, 1000))  # Keep car within screen bounds
-    cary = max(0, min(cary, 600))  # Keep car within screen bounds
+    cary = max(0, min(cary, 600))
 
     carx += speed * math.cos(math.radians(angle))
     cary -= speed * math.sin(math.radians(angle))
