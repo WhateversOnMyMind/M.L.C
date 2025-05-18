@@ -1,7 +1,7 @@
-import math, pygame, json
+import math, pygame
 import numpy as np
+from polygon import clicked_points
 from car_hand import calculation, update_position
-from polygon import points, make_quads
 from ai import forward, initial, active
 
 
@@ -27,6 +27,7 @@ mutation_rate=0.3
 dead_cars = 0
 generation = 0
 drawing = True
+pre = 0
 
 
 # def ==
@@ -96,6 +97,8 @@ class Car:
         if self.id != best_car.id:
             self.weight = [w.copy() for w in best_car.weight]
             self.mutate_weights()
+
+        
     
     
     
@@ -137,8 +140,13 @@ for agent in cars:
 def reset_all(cars):
         global start_time, dead_cars, generation, mutation_rate, drawing
         generation += 1
+        
+        
+        
+
         for agent in cars:
             agent.reset(best_car)
+        
         dead_cars = 0
         start_time = pygame.time.get_ticks()
         if best_car.fitness > 30:
@@ -193,7 +201,8 @@ while running:
 
         if any(d < 20 for d in agent.distances):
             # Collision detected, stop the car
-            agent.dead(cars)  # Reset car position
+            agent.dead(cars)
+ # Reset car position
         
         normalized_distances = np.array(agent.distances) / 150
         agent.output = forward(normalized_distances, agent.weight)
@@ -202,17 +211,23 @@ while running:
         agent.speed += (agent.output[0] - agent.output[1] + 0.4) * 0.2
 
         
-        if agent.id == best_car.id:
-            print(agent.output, agent.speed)
+        #if agent.id == best_car.id:
+            #print(agent.output, agent.speed)
 
         agent.up, agent.down, agent.left, agent.right = actions
 
-
+        """
         if point_in_quad(agent.car_rect.center, make_quads(agent.n)):
             agent.fitness += 1.8
             agent.n += 2
+        """
+        agent.fitness = min(
+            range(len(clicked_points)),
+            key=lambda i: (clicked_points[i][0] - agent.carx) ** 2 + (clicked_points[i][1] - agent.cary) ** 2
+        )
+
+
         #fitness_text = myFont.render(f"Fitness: {fitness}", True, (0, 0, 0))
-        # I will put the best fitness after
 
         # Draw the rays
         
@@ -223,20 +238,25 @@ while running:
     
     # Draw the points
 
-        if elapsed_sec > 1 and agent.fitness < 10:
+        if elapsed_sec > 1 and agent.fitness < 2:
             agent.dead(cars)
-        
-        
 
-    fitness_text = myFont.render(f"Best Fitness: {best_car.fitness:.3f}", True, (0, 0, 0))
-    screen.blit(fitness_text, (10, 10))
+        if dead_cars == len(cars):
+            reset_all(cars)
+        elif dead_cars == len(cars) - 1 and agent.id == best_car.id:
+            if best_car.weight == agent.weight or agent.fitness > best_car.fitness:
+                reset_all(cars)
+
+                
+
+
+    best_car = max(cars, key=lambda c: c.fitness)
+
+
+    #fitness_text = myFont.render(f"Best Fitness: {best_car.fitness:.3f}", True, (0, 0, 0))
+    #screen.blit(fitness_text, (10, 10))
     screen.blit(myFont.render(f"Generation: {generation}", True, (0, 0, 0)), (430, 0)) 
 
 
-    if dead_cars == len(cars):
-        reset_all(cars)
-    elif dead_cars == len(cars) - 1 and agent.id == best_car.id:
-        reset_all(cars)
-    best_car = max(cars, key=lambda c: c.fitness)
     pygame.display.update()
     clock.tick(60)
