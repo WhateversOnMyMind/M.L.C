@@ -26,6 +26,8 @@ screen = pygame.display.set_mode((1000, 600))
 mutation_rate=0.3
 dead_cars = 0
 generation = 0
+drawing = True
+
 
 # def ==
 def point_in_triangle(pt, v1, v2, v3):
@@ -119,7 +121,7 @@ class Car:
 
             if 0 <= test_x < background.get_width() and 0 <= test_y < background.get_height():
                 color = background.get_at((test_x, test_y))[:3]
-                pygame.draw.line(screen, (255, 0, 0), (self.carx, self.cary), (test_x, test_y), 3)
+                #pygame.draw.line(screen, (255, 0, 0), (self.carx, self.cary), (test_x, test_y), 3)
                 if color == (255, 255, 255):  # 하얀색에 닿았을 때
                     return dist
         return max_distance  # 안 닿았으면 최대 거리 리턴
@@ -133,7 +135,7 @@ for agent in cars:
   # Initialize weights
 
 def reset_all(cars):
-        global start_time, dead_cars, generation, mutation_rate
+        global start_time, dead_cars, generation, mutation_rate, drawing
         generation += 1
         for agent in cars:
             agent.reset(best_car)
@@ -141,6 +143,8 @@ def reset_all(cars):
         start_time = pygame.time.get_ticks()
         if best_car.fitness > 30:
             mutation_rate = 0.1
+        drawing = True
+
 
 
 best_car = max(cars, key=lambda c: c.fitness)
@@ -157,7 +161,14 @@ while running:
                 reset_all(cars)
 
     screen.blit(background, (0, 0))
+    elapsed_sec = (pygame.time.get_ticks() - start_time) // 1000
     
+    """
+    if drawing:
+        for i in range(len(points)):
+            pygame.draw.circle(screen, (255, 0, 0), points[i], 5)
+        drawing = False
+    """
 
     #up, down, left, right = keyboard_input()
     
@@ -204,32 +215,28 @@ while running:
         # I will put the best fitness after
 
         # Draw the rays
-        for i in range(len(points)):
-            pygame.draw.circle(screen, (255, 0, 0), points[i], 5)
+        
 
         # Drawing
         screen.blit(agent.car_rotated, agent.car_rect.topleft)
-        fitness_text = myFont.render(f"Best Fitness: {best_car.fitness:.3f}", True, (0, 0, 0))
-        screen.blit(fitness_text, (10, 10))
-        screen.blit(myFont.render(f"Generation: {generation}", True, (0, 0, 0)), (430, 0))  
+         
     
     # Draw the points
-        if dead_cars == len(cars):
-            reset_all(cars)
-        elif dead_cars == len(cars) - 1 and agent.id == best_car.id:
-            reset_all(cars)
 
-        elapsed_sec = (pygame.time.get_ticks() - start_time) // 1000
-        
-        if elapsed_sec > 1 and agent.fitness < 10 and agent.alive:
+        if elapsed_sec > 1 and agent.fitness < 10:
             agent.dead(cars)
-            if dead_cars == len(cars):
-                reset_all(cars)
-
+        
         
 
-    best_car = max(cars, key=lambda c: c.fitness)
+    fitness_text = myFont.render(f"Best Fitness: {best_car.fitness:.3f}", True, (0, 0, 0))
+    screen.blit(fitness_text, (10, 10))
+    screen.blit(myFont.render(f"Generation: {generation}", True, (0, 0, 0)), (430, 0)) 
 
-    
+
+    if dead_cars == len(cars):
+        reset_all(cars)
+    elif dead_cars == len(cars) - 1 and agent.id == best_car.id:
+        reset_all(cars)
+    best_car = max(cars, key=lambda c: c.fitness)
     pygame.display.update()
     clock.tick(60)
