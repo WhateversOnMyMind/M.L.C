@@ -1,6 +1,6 @@
 import math, pygame
 import numpy as np
-from polygon import clicked_points
+from polygon import clicked_points, clicked_points2
 from car_hand import calculation, update_position
 from ai import forward, initial, active
 
@@ -167,6 +167,8 @@ while running:
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_r:
                 reset_all(cars)
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            print(event.pos)
 
     screen.blit(background, (0, 0))
     elapsed_sec = (pygame.time.get_ticks() - start_time) // 1000
@@ -221,9 +223,7 @@ while running:
             agent.fitness += 1.8
             agent.n += 2
         """
-        agent.fitness = min(
-            range(len(clicked_points)),
-            key=lambda i: (clicked_points[i][0] - agent.carx) ** 2 + (clicked_points[i][1] - agent.cary) ** 2
+        agent.fitness = min(range(len(clicked_points)), key=lambda i: (clicked_points[i][0] - agent.carx) ** 2 + (clicked_points[i][1] - agent.cary) ** 2
         )
 
 
