@@ -1,6 +1,6 @@
 import math, pygame
 import numpy as np
-from polygon import clicked_points, clicked_points2
+from polygon import clicked_points, clicked_points2, best_weight
 from car_hand import calculation, update_position
 from ai import forward, initial, active
 
@@ -28,6 +28,8 @@ dead_cars = 0
 generation = 0
 drawing = True
 pre = 0
+best = False
+best_weight = [np.array(w).copy() for w in best_weight]
 
 
 # def ==
@@ -97,7 +99,8 @@ class Car:
         if self.id != best_car.id:
             self.weight = [w.copy() for w in best_car.weight]
             self.mutate_weights()
-
+        if best == True and self.id == 2:
+            self.weight = [w.copy() for w in best_weight]
         
     
     
@@ -167,8 +170,8 @@ while running:
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_r:
                 reset_all(cars)
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            print(event.pos)
+            if event.key == pygame.K_b:
+                best = True
 
     screen.blit(background, (0, 0))
     elapsed_sec = (pygame.time.get_ticks() - start_time) // 1000
@@ -244,15 +247,13 @@ while running:
         if dead_cars == len(cars):
             reset_all(cars)
         elif dead_cars == len(cars) - 1 and agent.id == best_car.id:
-            if best_car.weight == agent.weight or agent.fitness > best_car.fitness:
+            if  best_car.id == agent.id or agent.fitness > best_car.fitness:
                 reset_all(cars)
 
                 
 
 
     best_car = max(cars, key=lambda c: c.fitness)
-
-
     #fitness_text = myFont.render(f"Best Fitness: {best_car.fitness:.3f}", True, (0, 0, 0))
     #screen.blit(fitness_text, (10, 10))
     screen.blit(myFont.render(f"Generation: {generation}", True, (0, 0, 0)), (430, 0)) 
