@@ -246,7 +246,7 @@ while running:
 
         if dead_cars == len(cars):
             reset_all(cars)
-        elif dead_cars == len(cars) - 1 and agent.id == best_car.id:
+        elif dead_cars == len(cars) - 1 and agent.id == best_car.id and best == False:
             if  best_car.id == agent.id or agent.fitness > best_car.fitness:
                 reset_all(cars)
 
