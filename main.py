@@ -20,36 +20,15 @@ friction = 0.05
 background = pygame.image.load("map2.png")
 car = pygame.image.load("car.png")
 car = pygame.transform.scale(car, (50, 50))
-pygame.display.set_caption("D L C")
+pygame.display.set_caption("M.L.C")
 pygame.display.set_icon(pygame.image.load("car.png"))
 screen = pygame.display.set_mode((1000, 600))
 mutation_rate=0.3
 dead_cars = 0
 generation = 0
 drawing = True
-pre = 0
 best = False
 best_weight = [np.array(w).copy() for w in best_weight]
-
-
-# def ==
-def point_in_triangle(pt, v1, v2, v3):
-    def sign(p1, p2, p3):
-        return (p1[0] - p3[0]) * (p2[1] - p3[1]) - (p2[0] - p3[0]) * (p1[1] - p3[1])
-
-    d1 = sign(pt, v1, v2)
-    d2 = sign(pt, v2, v3)
-    d3 = sign(pt, v3, v1)
-
-    has_neg = (d1 < 0) or (d2 < 0) or (d3 < 0)
-    has_pos = (d1 > 0) or (d2 > 0) or (d3 > 0)
-
-    return not (has_neg and has_pos)
-
-def point_in_quad(location, quad):
-    # quad는 [(x1,y1), (x2,y2), (x3,y3), (x4,y4)]
-    return (point_in_triangle(location, quad[0], quad[1], quad[2]) or
-            point_in_triangle(location, quad[0], quad[2], quad[3]))
 
 
 
@@ -135,7 +114,7 @@ class Car:
 
 
   # List to store points
-cars = [Car() for _ in range(40)] 
+cars = [Car() for _ in range(40)]
 for agent in cars:
     agent.weight = initial()
   # Initialize weights
@@ -143,7 +122,6 @@ for agent in cars:
 def reset_all(cars):
         global start_time, dead_cars, generation, mutation_rate, drawing
         generation += 1
-        
         
         
 
